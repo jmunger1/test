@@ -1,6 +1,14 @@
 #/usr/bin/perl -w
 
-# this is really "insert songs that got votes," not all songs.  need another list for that.
+# this is really "insert songs that got votes," not all songs.  need another source for that (vote page?)
+
+  my $playlistID	= $ARGV[0];
+
+  if(!defined $playlistID || ($playlistID + 0) != $playlistID)
+  {
+    print "perl insert_songs.pl [playlistID] < votesFile.csv\n";
+    exit(1);
+  }
 
   my %songs;
 
@@ -30,6 +38,9 @@
   {
 #    print "$song : $songs{$song}{artist} : $songs{$song}{title}\n";
 
-    printf "IF NOT EXISTS (SELECT 1 FROM Spotify.Song WHERE Artist = '%s' AND Title = '%s') INSERT INTO Spotify.Song (Artist, Title) VALUES ('%s', '%s')\n",
-      , $songs{$song}{artist}, $songs{$song}{title}, $songs{$song}{artist}, $songs{$song}{title}
+
+#    printf "EXEC Spotify.spInsertSong '%s', '%s'\n",	# spInsertPlaylistSong calls this now
+#      , $songs{$song}{artist}, $songs{$song}{title};
+    printf "EXEC Spotify.spInsertPlaylistSong %d, '%s', '%s', 1\n",
+      , $playlistID, $songs{$song}{artist}, $songs{$song}{title};
   }
